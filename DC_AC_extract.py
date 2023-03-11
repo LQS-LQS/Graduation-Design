@@ -38,7 +38,7 @@ def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_typ
   
   return dc,ac_arrays
 
-def restore_padded_matrix_from_DC_AC(dc,ac_arrays,block_row_total, block_col_total,type):
+def restore_padded_matrix_from_DC_AC(dc,ac_arrays,block_row_total, block_col_total,quant_table_type):
   '''
     根据dc系数和ac系数还原原始8*8矩阵
   '''
@@ -49,10 +49,7 @@ def restore_padded_matrix_from_DC_AC(dc,ac_arrays,block_row_total, block_col_tot
     for col in range(0, block_col_total):
       block_index = row*block_col_total + col # 第几个8*8块
       tmp_block = zigzag_array_to_block( np.concatenate((dc[block_index:block_index+1],ac_arrays[block_index])) ) # 将dc系数和ac系数合并 将这个数组逆zigzag变换,变成8*8的数组
-      # print(tmp_block.shape[0], '  ', tmp_block.shape[1])
-      # could not broadcast input array from shape (8,8) into shape (8,0)
-      aaa = dequant_block(tmp_block,type)
-      # print(aaa.shape[0], '  ', aaa.shape[1])
+      aaa = dequant_block(tmp_block,quant_table_type)
       restored_matrix[row*8:row*8+8,col*8:col*8+8] = iDCT_2D(aaa)
 
 

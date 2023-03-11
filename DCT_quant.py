@@ -59,10 +59,6 @@ def quant_block(block, type):
     返回量化后的矩阵
   '''
   quant_table = get_quantization_table(type) # 得到量化表
-  # # quanted_block = np.clip((block/quant_table).round(), -15, 15).astype(np.int32) # 对应分量相除,然后取整,限定为最大值为15
-  # # !!!quanted_block = (block/quant_table).round().astype(np.int32) # 对应分量相除,然后取整
-  # # quanted_block = np.clip(quanted_block, -15, 15)
-  # # quanted_block = np.round(block / quant_table).clip(1, 15).astype(np.int32) # 对应分量相除,然后取整，并限制在1~15范围内
   quanted_block = np.round(np.divide(block, quant_table)).astype(int)
   return quanted_block
 
@@ -70,7 +66,6 @@ def dequant_block(block, type):
   '''
     返回反量化后的矩阵
   '''
-
   
   quant_table = get_quantization_table(type) # 得到量化表
   dequanted_block = block*quant_table.astype(np.int32) # 对应分量相乘,然后取整

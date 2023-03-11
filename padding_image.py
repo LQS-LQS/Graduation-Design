@@ -46,7 +46,6 @@ def restore_img_from_padding(Y_padded,Cb_padded,Cr_padded,rows_origin,cols_origi
           [3, 4]])
   
   '''
-  ## Cb_restored = np.repeat((np.repeat(Cb_padded,2,axis=1)),2,axis=0)
   
   Cb_restored = np.repeat((np.repeat(Cb_padded,2,axis=1)),2,axis=0)  ## 第一个axis有问题
   Cr_restored = np.repeat((np.repeat(Cr_padded,2,axis=1)),2,axis=0)
@@ -55,14 +54,6 @@ def restore_img_from_padding(Y_padded,Cb_padded,Cr_padded,rows_origin,cols_origi
   npmat_restored[:,:,1] = Cb_restored[:rows_origin, :cols_origin]
   npmat_restored[:,:,2] = Cr_restored[:rows_origin, :cols_origin]
   
-
-  '''
-  print(Y_padded,Cb_padded,Cr_padded)
-  npmat_restored = np.empty( [rows_origin,cols_origin,3], dtype=np.uint8)
-  npmat_restored[:,:,0] = Y_padded[   :rows_origin, :cols_origin]
-  npmat_restored[:,:,1] = Cb_padded[:rows_origin, :cols_origin]
-  npmat_restored[:,:,2] = Cr_padded[:rows_origin, :cols_origin]
-  '''
 
   return npmat_restored
 

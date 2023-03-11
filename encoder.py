@@ -7,6 +7,7 @@ from PIL              import Image
 from DC_AC_extract    import dct_quant_and_extract_DC_AC_from_padded_matrix
 from entropy_encoding import DPCM, RLE, decompose_RLE_list_to_huffmanResBitarray_valueBitarray, encode_DC_entropy_all,decode_DC_entropy_all
 from padding_image    import *
+from utils            import get_sub_sampling
 
 def main():
   # 输入格式 python encoder.py 1.jpg 123
@@ -21,7 +22,7 @@ def main():
   # 1. 图片由RGB转换为YCbCr
   ycbcr = image_to_compress.convert('YCbCr') # RGB转换为YCbCr
   npmat = np.array(ycbcr, dtype=int) - 128 # 归一化处理,每一个分量的范围-128~127, npmat:width * height * 3
-  # print(npmat)
+  
   rows,cols = npmat.shape[0],npmat.shape[1] # 像素的行数和列数
 
   # 2. 色度缩减取样 subsampling(4:2:0) + padding
@@ -37,8 +38,11 @@ def main():
   '''
   y  = npmat[:,:,0] # 取每一个元素的第三个分量 y:width * height * 1，YCbCr中的Y分量
   Cb = npmat[::2,::2,1] # 行数和列数步长为2
+  print(Cb)
+  Cb = get_sub_sampling(npmat[:,:,1])
+  print(Cb)
   Cr = npmat[::2,::2,2] # 行数和列数步长为2
-  
+  Cr = get_sub_sampling(npmat[:,:,2])
   Y_padded  = martix_padding(y)  # 将矩阵补充成8的倍数
   Cb_padded = martix_padding(Cb) # 将矩阵补充成8的倍数
   Cr_padded = martix_padding(Cr) # 将矩阵补充成8的倍数
