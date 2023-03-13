@@ -39,6 +39,8 @@ def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_typ
   return dc,ac_arrays
 
 def restore_padded_matrix_from_DC_AC(dc,ac_arrays,block_row_total, block_col_total,quant_table_type):
+  print("dc:",dc)
+  print("ac_arrays:",ac_arrays)
   '''
     根据dc系数和ac系数还原原始8*8矩阵
   '''

@@ -194,36 +194,17 @@ huffman_table_AC = {
     (14,9): bitarray('1111111111110011'),
     (14,10):bitarray('1111111111110100'),
 
-    (15,0):bitarray('11111111001'),
-    (15,1):bitarray('1111111111110101'),
-    (15,2):bitarray('1111111111110110'),
-    (15,3):bitarray('1111111111110111'),
-    (15,4):bitarray('1111111111111000'),
-    (15,5):bitarray('1111111111111001'),
-    (15,6):bitarray('1111111111111010'),
-    (15,7):bitarray('1111111111111011'),
-    (15,8):bitarray('1111111111111100'),
-    (15,9):bitarray('1111111111111101'),
+    (15,0): bitarray('11111111001'),
+    (15,1): bitarray('1111111111110101'),
+    (15,2): bitarray('1111111111110110'),
+    (15,3): bitarray('1111111111110111'),
+    (15,4): bitarray('1111111111111000'),
+    (15,5): bitarray('1111111111111001'),
+    (15,6): bitarray('1111111111111010'),
+    (15,7): bitarray('1111111111111011'),
+    (15,8): bitarray('1111111111111100'),
+    (15,9): bitarray('1111111111111101'),
     (15,10):bitarray('1111111111111110'),
-
-    # trouble:不会出现16,1 18,2这种吗,如何保证的
-    
-    (16,1):bitarray('111111111111111110000'),
-    (17,1):bitarray('111111111111111110001'),
-    (18,1):bitarray('111111111111111110010'),
-    (19,1):bitarray('111111111111111110011'),
-    (20,1):bitarray('111111111111111110100'),
-    (21,1):bitarray('111111111111111110101'),
-    (22,1):bitarray('111111111111111110110'),
-    (23,1):bitarray('111111111111111110111'),
-    (24,1):bitarray('111111111111111111000'),
-    (25,1):bitarray('111111111111111111001'),
-    (26,1):bitarray('111111111111111111010'),
-    (27,1):bitarray('111111111111111111011'),
-    (31,1):bitarray('111111111111111111100'),
-    (32,1):bitarray('111111111111111111101'),
-    (33,1):bitarray('111111111111111111110'),
-    
     
 }
 
@@ -352,11 +333,22 @@ def RLE(ac):
     if( ac_coefficient == 0 ):
       consecutive_0s += 1
     else:
-      # consecutive_0s = 0 # bug 给错了
-      # if(consecutive_0s > 15) :
-      #   rle_list.append( (15,0) )
-      #   consecutive_0s -= 16
-      #   print("刘青帅",consecutive_0s,ac_coefficient)
+      if(consecutive_0s > 15) :
+        rle_list.append( (15,0) )
+        consecutive_0s -= 16
+        print("刘青帅",consecutive_0s,ac_coefficient)
+      if(consecutive_0s > 15) :
+        rle_list.append( (15,0) )
+        consecutive_0s -= 16
+        print("刘青帅",consecutive_0s,ac_coefficient)
+      if(consecutive_0s > 15) :
+        rle_list.append( (15,0) )
+        consecutive_0s -= 16
+        print("刘青帅",consecutive_0s,ac_coefficient)
+      if(consecutive_0s > 15) :
+        rle_list.append( (15,0) )
+        consecutive_0s -= 16
+        print("刘青帅",consecutive_0s,ac_coefficient)
       rle_list.append( (consecutive_0s,ac_coefficient) )
       consecutive_0s = 0 # bug 给错了
     # 不要append(0,0) 直接把他放入huffman_ac表里面
@@ -423,18 +415,18 @@ def All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(all_block_huffman_re
   return all_block_rle_lists
 
 
-'''
 
-ab = [1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,8,1,3,0,0,0,0]
-ans = RLE(ab) # [(0, 1), (0, 2), (3, 3), (7, 1), (0, 8), (0, 1), (0, 3)]
-ans2 = RLE_decode(ans)
-rle_1, rle_2 =  decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ans)
-print(rle_1,rle_2)
-ANSS = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(rle_1,rle_2)
-#cao = decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ANSS)
-print(ans)
-print(ans2)
-print(ANSS)
-#print(cao)
 
-'''
+# ab = [1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,8,1,3,0,0,0,0]
+# ans = RLE(ab) # [(0, 1), (0, 2), (3, 3), (7, 1), (0, 8), (0, 1), (0, 3)]
+# ans2 = RLE_decode(ans)
+# rle_1, rle_2 =  decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ans)
+# print(rle_1,rle_2)
+# ANSS = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(rle_1,rle_2)
+# #cao = decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ANSS)
+# print(ans)
+# print(ans2)
+# print(ANSS)
+# #print(cao)
+
+

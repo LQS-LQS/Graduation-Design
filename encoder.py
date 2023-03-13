@@ -3,7 +3,7 @@ import numpy as np
 
 from bitarray         import bitarray
 from bitarray.util    import ba2int
-from PIL              import Image
+from PIL              import Image, ImageFilter
 from DC_AC_extract    import dct_quant_and_extract_DC_AC_from_padded_matrix
 from entropy_encoding import DPCM, RLE, decompose_RLE_list_to_huffmanResBitarray_valueBitarray, encode_DC_entropy_all,decode_DC_entropy_all
 from padding_image    import *
@@ -18,6 +18,7 @@ def main():
   input_image_path  = args.image_to_compress
   output_image_path = args.compressed_file
   image_to_compress = Image.open(input_image_path) # 读入图片
+  # image_to_compress = image_to_compress.filter(ImageFilter.GaussianBlur(radius=2)) #去噪
 
   # 1. 图片由RGB转换为YCbCr
   ycbcr = image_to_compress.convert('YCbCr') # RGB转换为YCbCr

@@ -1,6 +1,10 @@
 import numpy as np
 from scipy import fftpack
 
+# global lumNumber
+# global chromNumber
+# lumNumber = 0
+# chromNumber = 0
 '''
   Y_padded Cb_padded Cr_padded
 '''
@@ -52,7 +56,17 @@ def get_quantization_table(type):
         [99, 99, 99, 99, 99, 99, 99, 99],
         [99, 99, 99, 99, 99, 99, 99, 99] ]
     )
-  return table
+  
+  if(type == 'lum'):
+    # lumNumber = lumNumber + 1
+    # if( lumNumber % 100 == 0):
+    #   print('lum:',lumNumber)
+    return table / 6
+  else:
+    # chromNumber = chromNumber + 1
+    # if( chromNumber % 100 == 0):
+    #   print('chrom:',chromNumber)
+    return table * 4
 
 def quant_block(block, type):
   '''
