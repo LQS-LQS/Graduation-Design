@@ -10,6 +10,8 @@ from scipy import fftpack
 '''
 
 def DCT_2D(block):
+  global tt
+  tt = 0
   '''
     传入8*8的矩阵 \n
     返回DCT变换后的矩阵 \n
@@ -61,12 +63,12 @@ def get_quantization_table(type):
     # lumNumber = lumNumber + 1
     # if( lumNumber % 100 == 0):
     #   print('lum:',lumNumber)
-    return table / 6
+    return table / 5
   else:
     # chromNumber = chromNumber + 1
     # if( chromNumber % 100 == 0):
     #   print('chrom:',chromNumber)
-    return table * 4
+    return table
 
 def quant_block(block, type):
   '''
@@ -74,6 +76,15 @@ def quant_block(block, type):
   '''
   quant_table = get_quantization_table(type) # 得到量化表
   quanted_block = np.round(np.divide(block, quant_table)).astype(int)
+
+  sum = 0
+  for i in range(quanted_block.shape[0]):
+    for j in range (quanted_block.shape[1]):
+      sum = sum + quanted_block[i][j]
+  if( sum == 0 ): 
+    print("sum=0")  
+  
+  #print(quanted_block)
   return quanted_block
 
 def dequant_block(block, type):

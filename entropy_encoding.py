@@ -235,7 +235,9 @@ def DPCM_decode(dpcm_arr):
   dc_restored[0] = dpcm_arr[0]
   for i in range(1,dpcm_arr.shape[0]):
     dc_restored[i] = dpcm_arr[i] + dc_restored[i-1]
-  return dc_restored
+  # for i in range(1,dpcm_arr.shape[0]):
+  #   dc_restored[i] -= 10
+  return dc_restored 
   
 def decompose_int_to_size_value(n):
   '''
@@ -335,20 +337,17 @@ def RLE(ac):
     else:
       if(consecutive_0s > 15) :
         rle_list.append( (15,0) )
-        consecutive_0s -= 16
-        print("刘青帅",consecutive_0s,ac_coefficient)
+        consecutive_0s -= 16    
+      if(consecutive_0s > 15) :
+        rle_list.append( (15,0) )
+        consecutive_0s -= 16    
+      if(consecutive_0s > 15) :
+        rle_list.append( (15,0) )
+        consecutive_0s -= 16    
       if(consecutive_0s > 15) :
         rle_list.append( (15,0) )
         consecutive_0s -= 16
-        print("刘青帅",consecutive_0s,ac_coefficient)
-      if(consecutive_0s > 15) :
-        rle_list.append( (15,0) )
-        consecutive_0s -= 16
-        print("刘青帅",consecutive_0s,ac_coefficient)
-      if(consecutive_0s > 15) :
-        rle_list.append( (15,0) )
-        consecutive_0s -= 16
-        print("刘青帅",consecutive_0s,ac_coefficient)
+        
       rle_list.append( (consecutive_0s,ac_coefficient) )
       consecutive_0s = 0 # bug 给错了
     # 不要append(0,0) 直接把他放入huffman_ac表里面
@@ -417,16 +416,20 @@ def All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(all_block_huffman_re
 
 
 
-# ab = [1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,8,1,3,0,0,0,0]
-# ans = RLE(ab) # [(0, 1), (0, 2), (3, 3), (7, 1), (0, 8), (0, 1), (0, 3)]
-# ans2 = RLE_decode(ans)
-# rle_1, rle_2 =  decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ans)
-# print(rle_1,rle_2)
-# ANSS = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(rle_1,rle_2)
-# #cao = decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ANSS)
-# print(ans)
-# print(ans2)
-# print(ANSS)
-# #print(cao)
+ab = [1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,8,1,3,0,0,0,0]
+ab = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+ans = RLE(ab) # [(0, 1), (0, 2), (3, 3), (7, 1), (0, 8), (0, 1), (0, 3)]
+print(ans)
+
+rle_1, rle_2 =  decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ans)
+print(rle_1,rle_2)
+
+ans2 = RLE_decode(ans)
+print(ans2)
+ANSS = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(rle_1,rle_2)
+#cao = decompose_RLE_list_to_huffmanResBitarray_valueBitarray(ANSS)
+
+print(ANSS)
+#print(cao)
 
 

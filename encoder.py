@@ -25,6 +25,7 @@ def main():
   npmat = np.array(ycbcr, dtype=int) - 128 # 归一化处理,每一个分量的范围-128~127, npmat:width * height * 3
   
   rows,cols = npmat.shape[0],npmat.shape[1] # 像素的行数和列数
+  print(rows/2 * cols/2 / 8 /8)
 
   # 2. 色度缩减取样 subsampling(4:2:0) + padding
   '''
