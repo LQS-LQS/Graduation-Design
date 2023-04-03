@@ -8,6 +8,7 @@ from PIL              import Image
 from DC_AC_extract    import *
 from entropy_encoding import *
 from file_format      import *
+from buffer_algorithm import resumeBuffer
 
 
 #usage: python decoder.py 123 fuck.png
@@ -26,14 +27,32 @@ def main():
   file_bitarray.fromfile(file_to_decompress)
   
   # 读取数据
-  rows,cols,bitarr_len_lst,bitarr_lst = file_bitarray_decompose(file_bitarray)
+  rows,cols,buffer_relative_arr,bitarr_len_lst,bitarr_lst = file_bitarray_decompose(file_bitarray)
 
   size_bitarray_dc_y,     value_bitarray_dc_y,\
   size_bitarray_dc_cb,    value_bitarray_dc_cb,\
   size_bitarray_dc_cr,    value_bitarray_dc_cr,\
   huffman_bitarray_ac_y,  value_bitarray_ac_y,\
   huffman_bitarray_ac_cb, value_bitarray_ac_cb,\
-  huffman_bitarray_ac_cr, value_bitarray_ac_cr       = bitarr_lst
+  huffman_bitarray_ac_cr, value_bitarray_ac_cr,\
+  buffer_cb,              buffer_cr               = bitarr_lst
+
+  buffer_cb = resumeBuffer(buffer_cb,buffer_relative_arr[0], buffer_relative_arr[1])
+  buffer_cr = resumeBuffer(buffer_cr,buffer_relative_arr[3], buffer_relative_arr[4])
+  print("size_bitarray_dc_y",size_bitarray_dc_y)
+  print("value_bitarray_dc_y",value_bitarray_dc_y)
+  print("size_bitarray_dc_cb",size_bitarray_dc_cb)
+  print("value_bitarray_dc_cb",value_bitarray_dc_cb)
+  print("size_bitarray_dc_cr",size_bitarray_dc_cr)
+  print("value_bitarray_dc_cr",value_bitarray_dc_cr)
+  print("buffer_Cb------------",buffer_cb)
+  print("buffer_Cr------------",buffer_cr)
+  print("huffman_bitarray_ac_y",huffman_bitarray_ac_y)
+  print("value_bitarray_ac_y",value_bitarray_ac_y)
+  print("huffman_bitarray_ac_cb",huffman_bitarray_ac_cb)
+  print("value_bitarray_ac_cb",value_bitarray_ac_cb)
+  print("huffman_bitarray_ac_cr",huffman_bitarray_ac_cr)
+  print("value_bitarray_ac_cr",value_bitarray_ac_cr)
 
   for bar in bitarr_lst:
     bitarray_len = len(bar)
@@ -81,9 +100,9 @@ def main():
     block_index += 1
   
   
-  padded_matrix_restored_y = restore_padded_matrix_from_DC_AC( dc_y_restored,  ac_arrays_y_restored,  block_rows_y,block_cols_y,   'lum')
-  padded_matrix_restored_cb = restore_padded_matrix_from_DC_AC(dc_cb_restored, ac_arrays_cb_restored, block_rows_cb,block_cols_cb, 'chrom')
-  padded_matrix_restored_cr = restore_padded_matrix_from_DC_AC(dc_cr_restored, ac_arrays_cr_restored, block_rows_cr,block_cols_cr, 'chrom')
+  padded_matrix_restored_y = restore_padded_matrix_from_DC_AC( dc_y_restored,  ac_arrays_y_restored,  block_rows_y,block_cols_y,  [],'lum')
+  padded_matrix_restored_cb = restore_padded_matrix_from_DC_AC(dc_cb_restored, ac_arrays_cb_restored, block_rows_cb,block_cols_cb, buffer_cb, 'chrom')
+  padded_matrix_restored_cr = restore_padded_matrix_from_DC_AC(dc_cr_restored, ac_arrays_cr_restored, block_rows_cr,block_cols_cr, buffer_cr,'chrom')
   print("lqs:",dc_y_restored,  ac_arrays_y_restored,  block_rows_y,block_cols_y)
   print(padded_matrix_restored_y)
 

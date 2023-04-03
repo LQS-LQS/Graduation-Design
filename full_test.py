@@ -116,6 +116,7 @@ print( np.sign(1110) )
 
 import numpy as np
 from scipy import fftpack
+from bitarray import bitarray
 lqs_ar = np.ones((3,3))
 DCT_matrix = fftpack.dct( fftpack.dct(lqs_ar.T).T )
 print( fftpack.dct(lqs_ar.T) )
@@ -129,3 +130,9 @@ print(a,b,c,d)
 
 for i in range(0,3):
     print(i)
+
+
+print( len([1,23]))
+
+
+print( bitarray( format(len([1]), '#018b')[2:] ) )

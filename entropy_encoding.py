@@ -220,7 +220,9 @@ def DPCM(dc):
       形如[1,20,30,40] 差分编码后 变为 [1,19,10,10] 使得数字变小,二进制位数就变少了
   '''
   dpcm_arr = np.empty(dc.shape,dtype=dc.dtype)
-  dpcm_arr[0] = dc[0]
+  print("dc--------------------",dc)
+  if(len(dc) != 0):
+    dpcm_arr[0] = dc[0]
   
   for i in range(1,dc.shape[0]):
     dpcm_arr[i] = dc[i]-dc[i-1]
@@ -232,6 +234,9 @@ def DPCM_decode(dpcm_arr):
     dpcm逆变换,很简单,无注释
   '''
   dc_restored = np.empty(dpcm_arr.shape,dtype=dpcm_arr.dtype)
+  print("wwwwwwwwwwwww",dpcm_arr.shape)
+  if(dpcm_arr.shape[0] == 0):
+    return dc_restored
   dc_restored[0] = dpcm_arr[0]
   for i in range(1,dpcm_arr.shape[0]):
     dc_restored[i] = dpcm_arr[i] + dc_restored[i-1]
@@ -295,6 +300,7 @@ def encode_DC_entropy_all(dpcm_arr):
 
   for n in dpcm_arr:
     cur_size, cur_value_bitarray = decompose_int_to_size_value(n) # cur_size:n所占的比特位数 cur_value_bitarray:二进制数组序列
+    #print(hex(cur_size)[2:])
     cur_size_bitarray = huffman_table_DC[hex(cur_size)[2:]] # hex先转换为16进制后再把开头的0x去掉,由DC哈夫曼表得到cur_size的编码
     size_bitarray += cur_size_bitarray
     value_bitarray += cur_value_bitarray
@@ -416,6 +422,7 @@ def All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(all_block_huffman_re
 
 
 
+'''
 ab = [1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,8,1,3,0,0,0,0]
 ab = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ans = RLE(ab) # [(0, 1), (0, 2), (3, 3), (7, 1), (0, 8), (0, 1), (0, 3)]
@@ -431,5 +438,6 @@ ANSS = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(rle_1,rle_2)
 
 print(ANSS)
 #print(cao)
+'''
 
 

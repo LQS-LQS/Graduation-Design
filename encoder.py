@@ -8,6 +8,7 @@ from DC_AC_extract    import dct_quant_and_extract_DC_AC_from_padded_matrix
 from entropy_encoding import DPCM, RLE, decompose_RLE_list_to_huffmanResBitarray_valueBitarray, encode_DC_entropy_all,decode_DC_entropy_all
 from padding_image    import *
 from utils            import get_sub_sampling
+from buffer_algorithm import getBuffer
 
 def main():
   # 输入格式 python encoder.py 1.jpg 123
@@ -25,7 +26,7 @@ def main():
   npmat = np.array(ycbcr, dtype=int) - 128 # 归一化处理,每一个分量的范围-128~127, npmat:width * height * 3
   
   rows,cols = npmat.shape[0],npmat.shape[1] # 像素的行数和列数
-  print(rows/2 * cols/2 / 8 /8)
+  print("压缩文件的行数:",rows /2 /8,"压缩文件的列数:" ,cols /2 /8)
 
   # 2. 色度缩减取样 subsampling(4:2:0) + padding
   '''
@@ -39,11 +40,11 @@ def main():
       demo:7*7大小的矩阵,采样后变为4*4,然后变为8*8;
   '''
   y  = npmat[:,:,0] # 取每一个元素的第三个分量 y:width * height * 1，YCbCr中的Y分量
-  Cb = npmat[::2,::2,1] # 行数和列数步长为2
-  print(Cb)
+  #Cb = npmat[::2,::2,1] # 行数和列数步长为2
+  #print(Cb)
+  #print(Cb)
+  #Cr = npmat[::2,::2,2] # 行数和列数步长为2
   Cb = get_sub_sampling(npmat[:,:,1])
-  print(Cb)
-  Cr = npmat[::2,::2,2] # 行数和列数步长为2
   Cr = get_sub_sampling(npmat[:,:,2])
   Y_padded  = martix_padding(y)  # 将矩阵补充成8的倍数
   Cb_padded = martix_padding(Cb) # 将矩阵补充成8的倍数
@@ -51,13 +52,20 @@ def main():
 
   # 3. dct变换 + quant量化  + dc/ac提取
 
-  # 提取dc和ac系数
-  dc_y,ac_arrays_y   = dct_quant_and_extract_DC_AC_from_padded_matrix(Y_padded,  'lum')
-  dc_cb,ac_arrays_cb = dct_quant_and_extract_DC_AC_from_padded_matrix(Cb_padded, 'chrom')
-  dc_cr,ac_arrays_cr = dct_quant_and_extract_DC_AC_from_padded_matrix(Cr_padded, 'chrom')
-
+  # 提取dc和ac系数 y分量不需要buffer，cb和cr分量才需要有buffer，由于判断的是整个块是否为空，所以dc和ac的buffer其实是一样的
+  dc_y,ac_arrays_y,_,_  = dct_quant_and_extract_DC_AC_from_padded_matrix(Y_padded,  'lum')
+  dc_cb,ac_arrays_cb,buffer_cb,cnt_empty_block_cb = dct_quant_and_extract_DC_AC_from_padded_matrix(Cb_padded, 'chrom')
+  dc_cr,ac_arrays_cr,buffer_cr,cnt_empty_block_cr = dct_quant_and_extract_DC_AC_from_padded_matrix(Cr_padded, 'chrom')
+  
+  print("buffer:cb",len(buffer_cb))  #单纯的01矩阵
+  print("buffer:cr",len(buffer_cr))  #单纯的01矩阵
+  
+  ints_buffer_cb, avg_zeros_buffer_cb, add_0s_buffer_cb, cnt_empty_block_cb = getBuffer(buffer_cb, cnt_empty_block_cb)  #得到压缩之后的数据
+  ints_buffer_cr, avg_zeros_buffer_cr, add_0s_buffer_cr, cnt_empty_block_cr = getBuffer(buffer_cr, cnt_empty_block_cr)  #得到压缩之后的数据
   # dpcm + dc的熵编码
   # 差分编码
+  print("buffer:cb",len(ints_buffer_cb),avg_zeros_buffer_cb,add_0s_buffer_cb,cnt_empty_block_cb)
+  print("buffer:cr",len(ints_buffer_cr),avg_zeros_buffer_cr,add_0s_buffer_cr,cnt_empty_block_cr)
   dpcm_y  = DPCM(dc_y)
   dpcm_cb = DPCM(dc_cb)
   dpcm_cr = DPCM(dc_cr)
@@ -65,8 +73,12 @@ def main():
   # dc差分编码
   size_bitarray_dc_y, value_bitarray_dc_y = encode_DC_entropy_all(dpcm_y)
   size_bitarray_dc_cb, value_bitarray_dc_cb = encode_DC_entropy_all(dpcm_cb)
+  
   size_bitarray_dc_cr, value_bitarray_dc_cr = encode_DC_entropy_all(dpcm_cr)
-
+  print("size_bitarray_dc_cb",size_bitarray_dc_cb)
+  print("value_bitarray_dc_cb",value_bitarray_dc_cb)
+  print("size_bitarray_dc_cr",size_bitarray_dc_cr)
+  print("value_bitarray_dc_cr",value_bitarray_dc_cr)
   # 对于每一个8*8矩阵块的ac系数进行RLE行程编码,然后通过比特编码联合在一起
   huffman_res_bitarray_ac_y = bitarray()
   value_res_bitarray_ac_y = bitarray()
@@ -101,17 +113,29 @@ def main():
       size_bitarray_dc_cr,value_bitarray_dc_cr,\
       huffman_res_bitarray_ac_y,value_res_bitarray_ac_y,\
       huffman_res_bitarray_ac_cb,value_res_bitarray_ac_cb,\
-      huffman_res_bitarray_ac_cr,value_res_bitarray_ac_cr
+      huffman_res_bitarray_ac_cr,value_res_bitarray_ac_cr, \
+      ints_buffer_cb, ints_buffer_cr,
     ]
-    
+    # y分量的dc和ac很多
     write_bitarray = bitarray()
+    print(avg_zeros_buffer_cb,add_0s_buffer_cb,cnt_empty_block_cb,avg_zeros_buffer_cr,add_0s_buffer_cr,cnt_empty_block_cr)
     rows_barr = bitarray( format(rows, '#018b')[2:] ) # 行数和列数
     cols_barr = bitarray( format(cols, '#018b')[2:] ) # 2:是因为去掉0b
     write_bitarray += rows_barr # 行数和列数
     write_bitarray += cols_barr
+    write_bitarray += avg_zeros_buffer_cb # cb平均0的个数   16位  上面都是16位
+    write_bitarray += add_0s_buffer_cb  # cb添加0的个数     16位
+    write_bitarray += cnt_empty_block_cb # cb空快个数       16位
+    write_bitarray += avg_zeros_buffer_cr # cr平均0的个数   16位
+    write_bitarray += add_0s_buffer_cr  # cr添加0的个数     16位
+    write_bitarray += cnt_empty_block_cr # cr空快个数       16位
+
+
     print("行数:"+ format(rows, '#018b')[2:] + "  列数:" + format(cols, '#018b')[2:])
 
     for barr in bitarray_lst:
+      print("lennnnn",len(barr))
+      print(format(len(barr), '#034b')[2:])
       cur_bit_len_barr = bitarray( format(len(barr), '#034b')[2:] ) # 记住每一个item的长度
       write_bitarray += cur_bit_len_barr # bitarray_lst每一个item的长度
 
@@ -119,7 +143,8 @@ def main():
       write_bitarray += barr
 
     write_bitarray.tofile(outFile)
-
+    # outFile格式 行数, 列数, 
+    #
 
 if __name__ == "__main__":
   main()
