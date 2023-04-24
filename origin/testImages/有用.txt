@@ -1,0 +1,36 @@
+5.1.09 	522¸özero¿é
+5.1.12 	513¸özero¿é
+5.1.13 	512¸özero¿é
+a1	284
+
+
+
+lennnnn 3400
+lennnnn 4350
+lennnnn 0
+lennnnn 0
+lennnnn 0
+lennnnn 0
+lennnnn 101313
+lennnnn 51674
+lennnnn 0
+lennnnn 0
+lennnnn 0
+lennnnn 0
+lennnnn 8
+lennnnn 8
+
+lennnnnnnnnnnnn 850
+lennnnnnnnnnnnn 1087
+lennnnnnnnnnnnn 2147483648
+lennnnnnnnnnnnn 0
+lennnnnnnnnnnnn 0
+lennnnnnnnnnnnn 0
+lennnnnnnnnnnnn 25328
+lennnnnnnnnnnnn 1073754742
+lennnnnnnnnnnnn 2147483648
+lennnnnnnnnnnnn 0
+lennnnnnnnnnnnn 0
+lennnnnnnnnnnnn 0
+lennnnnnnnnnnnn 2
+lennnnnnnnnnnnn 2

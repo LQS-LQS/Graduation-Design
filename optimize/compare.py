@@ -1,45 +1,26 @@
-import os
+'''
+MSE在500以下的图像质量相对比较好，MSE在1000以下的图像质量一般可以接受
+MSE  :  衡量原始图像和经过压缩后的图像之间差异的一种方法  
+        MSE计算的是每个像素值之间的平方误差的均值
+PSNR :  衡量压缩算法输出图像质量的一种方法 
+        PSNR表示原始图像和经过压缩后的图像之间的峰值信噪比  
+        峰值信噪比越高，表示压缩算法输出的图像质量越好
+'''
+
+import cv2
 import numpy as np
-from PIL import Image
 
-def jpeg_compression_quality(img_file, quality):
-    """
-    使用PIL库中的jpeg压缩函数压缩图像并返回压缩后的图像对象
-    """
-    img = Image.open(img_file)
-    img = img.convert('RGB')
-    img.save('temp.jpg', 'JPEG', quality=quality)
-    compressed_img = Image.open('temp.jpg')
-    return compressed_img
+for num in range(1,19):
+  jpeg_original = f"./testImages/t{num}.jpg"
+  jpeg_compressed = f"./testImages/t{num}_res.jpg"
+  # 读取原始图像和经过压缩后的图像
+  original_img = cv2.imread(jpeg_original)
+  compressed_img = cv2.imread(jpeg_compressed)
+  # 计算均方误差
+  mse = np.mean((original_img - compressed_img) ** 2) # 
 
-def mean_square_error(img1, img2):
-    """
-    计算两张图像之间的均方误差（MSE）
-    """
-    img1 = np.array(img1, dtype=np.float32)
-    img2 = np.array(img2, dtype=np.float32)
-    mse = np.mean((img1 - img2) ** 2)
-    return mse
+  # 计算峰值信噪比
+  max_pixel_value = 255
+  psnr = 10 * np.log10((max_pixel_value ** 2) / mse) # 
 
-def classify_jpeg_compression(img_file, threshold=50):
-    """
-    判断JPEG图片压缩算法的损失情况是否达到标准
-    """
-    original_img = Image.open(img_file)
-    compressed_img = jpeg_compression_quality(img_file, quality=50)
-    mse = mean_square_error(original_img, compressed_img)
-    os.remove('temp.jpg')
-    if mse > threshold:
-        return '压缩算法损失严重'
-    else:
-        return '压缩算法损失较小'
-
-# 测试代码
-# img_file = 'example.jpg'
-# result = classify_jpeg_compression(img_file, threshold=50)
-# print(result)
-
-l1 = Image.open("./testImages/5.1.09.jpg")
-l2 = Image.open("./testImages/5.1.09_buffer.jpg")
-res = mean_square_error(l1, l2)
-print(res)
+  print(f"图片{num}:    MSE={mse},      PSNR={psnr}")
