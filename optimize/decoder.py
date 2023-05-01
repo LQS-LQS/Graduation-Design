@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import math
+import time
 
 from bitarray         import bitarray
 from bitarray.util    import *
@@ -14,6 +15,8 @@ from buffer_algorithm import resumeBuffer
 #usage: python decoder.py 123 fuck.png
 
 def main():
+  start_time = time.perf_counter()
+
   parser = argparse.ArgumentParser()
   parser.add_argument("file_to_decompress", help="file path for decompression")
   parser.add_argument("image_restored", help="restored image name")
@@ -39,20 +42,20 @@ def main():
 
   buffer_cb = resumeBuffer(buffer_cb,buffer_relative_arr[0], buffer_relative_arr[1])
   buffer_cr = resumeBuffer(buffer_cr,buffer_relative_arr[3], buffer_relative_arr[4])
-  print("size_bitarray_dc_y",size_bitarray_dc_y)
-  print("value_bitarray_dc_y",value_bitarray_dc_y)
-  print("size_bitarray_dc_cb",size_bitarray_dc_cb)
-  print("value_bitarray_dc_cb",value_bitarray_dc_cb)
-  print("size_bitarray_dc_cr",size_bitarray_dc_cr)
-  print("value_bitarray_dc_cr",value_bitarray_dc_cr)
-  print("buffer_Cb------------",buffer_cb)
-  print("buffer_Cr------------",buffer_cr)
-  print("huffman_bitarray_ac_y",huffman_bitarray_ac_y)
-  print("value_bitarray_ac_y",value_bitarray_ac_y)
-  print("huffman_bitarray_ac_cb",huffman_bitarray_ac_cb)
-  print("value_bitarray_ac_cb",value_bitarray_ac_cb)
-  print("huffman_bitarray_ac_cr",huffman_bitarray_ac_cr)
-  print("value_bitarray_ac_cr",value_bitarray_ac_cr)
+  # print("size_bitarray_dc_y",size_bitarray_dc_y)
+  # print("value_bitarray_dc_y",value_bitarray_dc_y)
+  # print("size_bitarray_dc_cb",size_bitarray_dc_cb)
+  # print("value_bitarray_dc_cb",value_bitarray_dc_cb)
+  # print("size_bitarray_dc_cr",size_bitarray_dc_cr)
+  # print("value_bitarray_dc_cr",value_bitarray_dc_cr)
+  # print("buffer_Cb------------",buffer_cb)
+  # print("buffer_Cr------------",buffer_cr)
+  # print("huffman_bitarray_ac_y",huffman_bitarray_ac_y)
+  # print("value_bitarray_ac_y",value_bitarray_ac_y)
+  # print("huffman_bitarray_ac_cb",huffman_bitarray_ac_cb)
+  # print("value_bitarray_ac_cb",value_bitarray_ac_cb)
+  # print("huffman_bitarray_ac_cr",huffman_bitarray_ac_cr)
+  # print("value_bitarray_ac_cr",value_bitarray_ac_cr)
 
   for bar in bitarr_lst:
     bitarray_len = len(bar)
@@ -70,7 +73,7 @@ def main():
   all_block_RLE_lists_cr = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(huffman_bitarray_ac_cr, value_bitarray_ac_cr)
   #calculate y,cb,cr 8x8 block index from ogirinal rows and cols
   block_rows_y,block_cols_y = math.ceil(rows/8), math.ceil(cols/8)
-  print("lqs:",rows,cols)
+  # print("lqs:",rows,cols)
   block_rows_cb,block_cols_cb = block_rows_cr,block_cols_cr = math.ceil(rows/2/8),math.ceil(cols/2/8)
   block_total_y  = block_rows_y * block_cols_y
   block_total_cb = block_rows_cb * block_cols_cb
@@ -103,8 +106,8 @@ def main():
   padded_matrix_restored_y = restore_padded_matrix_from_DC_AC( dc_y_restored,  ac_arrays_y_restored,  block_rows_y,block_cols_y,  [],'lum')
   padded_matrix_restored_cb = restore_padded_matrix_from_DC_AC(dc_cb_restored, ac_arrays_cb_restored, block_rows_cb,block_cols_cb, buffer_cb, 'chrom')
   padded_matrix_restored_cr = restore_padded_matrix_from_DC_AC(dc_cr_restored, ac_arrays_cr_restored, block_rows_cr,block_cols_cr, buffer_cr,'chrom')
-  print("lqs:",dc_y_restored,  ac_arrays_y_restored,  block_rows_y,block_cols_y)
-  print(padded_matrix_restored_y)
+  # print("lqs:",dc_y_restored,  ac_arrays_y_restored,  block_rows_y,block_cols_y)
+  # print(padded_matrix_restored_y)
 
 
   npmat_restored = restore_img_from_padding(padded_matrix_restored_y, padded_matrix_restored_cb, padded_matrix_restored_cr, rows, cols)+128
@@ -112,6 +115,8 @@ def main():
   image = image.convert('RGB')
   image.save(image_restored_path)
 
-
+  end_time = time.perf_counter()
+  elapsed_time = end_time - start_time
+  print(f"decoder's execution time : {elapsed_time:.4f} s")
 if __name__ == "__main__":
   main()

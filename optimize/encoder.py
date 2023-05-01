@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import time
 
 from bitarray         import bitarray
 from bitarray.util    import ba2int
@@ -11,6 +12,8 @@ from utils            import get_sub_sampling
 from buffer_algorithm import getBuffer
 
 def main():
+  start_time = time.perf_counter()
+
   # 输入格式 python encoder.py 1.jpg 123
   parser = argparse.ArgumentParser()
   parser.add_argument("image_to_compress", help="path to the input image")
@@ -26,7 +29,7 @@ def main():
   npmat = np.array(ycbcr, dtype=int) - 128 # 归一化处理,每一个分量的范围-128~127, npmat:width * height * 3
   
   rows,cols = npmat.shape[0],npmat.shape[1] # 像素的行数和列数
-  print("压缩文件的行数:",rows /2 /8,"压缩文件的列数:" ,cols /2 /8)
+  # print("压缩文件的行数:",rows /2 /8,"压缩文件的列数:" ,cols /2 /8)
 
   # 2. 色度缩减取样 subsampling(4:2:0) + padding
   '''
@@ -57,15 +60,15 @@ def main():
   dc_cb,ac_arrays_cb,buffer_cb,cnt_empty_block_cb = dct_quant_and_extract_DC_AC_from_padded_matrix(Cb_padded, 'chrom')
   dc_cr,ac_arrays_cr,buffer_cr,cnt_empty_block_cr = dct_quant_and_extract_DC_AC_from_padded_matrix(Cr_padded, 'chrom')
   
-  print("buffer:cb",len(buffer_cb))  #单纯的01矩阵
-  print("buffer:cr",len(buffer_cr))  #单纯的01矩阵
+  # print("buffer:cb",len(buffer_cb))  #单纯的01矩阵
+  # print("buffer:cr",len(buffer_cr))  #单纯的01矩阵
   
   ints_buffer_cb, avg_zeros_buffer_cb, add_0s_buffer_cb, cnt_empty_block_cb = getBuffer(buffer_cb, cnt_empty_block_cb)  #得到压缩之后的数据
   ints_buffer_cr, avg_zeros_buffer_cr, add_0s_buffer_cr, cnt_empty_block_cr = getBuffer(buffer_cr, cnt_empty_block_cr)  #得到压缩之后的数据
   # dpcm + dc的熵编码
   # 差分编码
-  print("buffer:cb",len(ints_buffer_cb),avg_zeros_buffer_cb,add_0s_buffer_cb,cnt_empty_block_cb)
-  print("buffer:cr",len(ints_buffer_cr),avg_zeros_buffer_cr,add_0s_buffer_cr,cnt_empty_block_cr)
+  # print("buffer:cb",len(ints_buffer_cb),avg_zeros_buffer_cb,add_0s_buffer_cb,cnt_empty_block_cb)
+  # print("buffer:cr",len(ints_buffer_cr),avg_zeros_buffer_cr,add_0s_buffer_cr,cnt_empty_block_cr)
   dpcm_y  = DPCM(dc_y)
   dpcm_cb = DPCM(dc_cb)
   dpcm_cr = DPCM(dc_cr)
@@ -75,10 +78,10 @@ def main():
   size_bitarray_dc_cb, value_bitarray_dc_cb = encode_DC_entropy_all(dpcm_cb)
   
   size_bitarray_dc_cr, value_bitarray_dc_cr = encode_DC_entropy_all(dpcm_cr)
-  print("size_bitarray_dc_cb",size_bitarray_dc_cb)
-  print("value_bitarray_dc_cb",value_bitarray_dc_cb)
-  print("size_bitarray_dc_cr",size_bitarray_dc_cr)
-  print("value_bitarray_dc_cr",value_bitarray_dc_cr)
+  # print("size_bitarray_dc_cb",size_bitarray_dc_cb)
+  # print("value_bitarray_dc_cb",value_bitarray_dc_cb)
+  # print("size_bitarray_dc_cr",size_bitarray_dc_cr)
+  # print("value_bitarray_dc_cr",value_bitarray_dc_cr)
   # 对于每一个8*8矩阵块的ac系数进行RLE行程编码,然后通过比特编码联合在一起
   huffman_res_bitarray_ac_y = bitarray()
   value_res_bitarray_ac_y = bitarray()
@@ -118,7 +121,7 @@ def main():
     ]
     # y分量的dc和ac很多
     write_bitarray = bitarray()
-    print(avg_zeros_buffer_cb,add_0s_buffer_cb,cnt_empty_block_cb,avg_zeros_buffer_cr,add_0s_buffer_cr,cnt_empty_block_cr)
+    # print(avg_zeros_buffer_cb,add_0s_buffer_cb,cnt_empty_block_cb,avg_zeros_buffer_cr,add_0s_buffer_cr,cnt_empty_block_cr)
     rows_barr = bitarray( format(rows, '#018b')[2:] ) # 行数和列数
     cols_barr = bitarray( format(cols, '#018b')[2:] ) # 2:是因为去掉0b
     write_bitarray += rows_barr # 行数和列数
@@ -131,11 +134,11 @@ def main():
     write_bitarray += cnt_empty_block_cr # cr空快个数       16位
 
 
-    print("行数:"+ format(rows, '#018b')[2:] + "  列数:" + format(cols, '#018b')[2:])
+    # print("行数:"+ format(rows, '#018b')[2:] + "  列数:" + format(cols, '#018b')[2:])
 
     for barr in bitarray_lst:
-      print("lennnnn",len(barr))
-      print(format(len(barr), '#034b')[2:])
+      # print("lennnnn",len(barr))
+      # print(format(len(barr), '#034b')[2:])
       cur_bit_len_barr = bitarray( format(len(barr), '#034b')[2:] ) # 记住每一个item的长度
       write_bitarray += cur_bit_len_barr # bitarray_lst每一个item的长度
 
@@ -146,6 +149,9 @@ def main():
     # outFile格式 行数, 列数, 
     #
 
+    end_time = time.perf_counter()
+    elapsed_time = end_time - start_time
+    print(f"encoder's execution time : {elapsed_time:.4f} s")
 if __name__ == "__main__":
   main()
 
