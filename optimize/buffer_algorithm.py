@@ -125,7 +125,7 @@ def de_change_bit( arr ):
   return int01_arr_to_bits(res)
 
 def to_bitarray( arr, avg_zeros, add_0s, cnt_block_count):
-  print('into to_bitarray',cnt_block_count)
+  # print('into to_bitarray',cnt_block_count)
   '''
     全部变成八进制
   '''
@@ -142,21 +142,21 @@ def getBuffer(int_01_array, cnt_block_count):
     传出压缩之后的矩阵int && 补0的个数
   '''
   int_01_array = change_bit(int_01_array)      # 改变位
-  print("该变位之后的矩阵",int_01_array)
+  # print("该变位之后的矩阵",int_01_array)
   bits_arr = int01_arr_to_bits( int_01_array ) # 将01的int数组转换为比特序列
-  print("比特序列",bits_arr)
+  # print("比特序列",bits_arr)
   ints_arr,add_0s = bits_to_ints( bits_arr )   # 将比特序列转换为字节
-  print("字节序列",ints_arr)
+  # print("字节序列",ints_arr)
   avg_zeros,_ = count_zeros(ints_arr)          # 计算连续0的平均个数
   ints_arr = replace_zeros(ints_arr, avg_zeros) # 进行连续0的平均个数的替换
-  print("替换之后的",ints_arr)
+  # print("替换之后的",ints_arr)
   ints_arr, avg_zeros, add_0s, cnt_block_count = to_bitarray(ints_arr, avg_zeros, add_0s, cnt_block_count)
   return ints_arr, avg_zeros, add_0s, cnt_block_count
 
 
 def func(ints_arr, add_0s):
   length = len(ints_arr)
-  print("len",length)
+  # print("len",length)
   res = np.empty(length//8, dtype=int)
   for i in range(0, length-8, 8):
     bits = ints_arr[i:i+8]
@@ -169,19 +169,19 @@ def resumeBuffer(ints_arr, avg_zeros, add_0s):
     上面函数的逆
     传进来bitarray('0101010110什么玩意的')
   '''
-  print(avg_zeros,add_0s)
+  # print(avg_zeros,add_0s)
   #avg_zeros = int(avg_zeros.to01(), 2)
   #add_0s = int(add_0s.to01(), 2)
   arr,_ = bits_to_ints(ints_arr)
-  print("将01序列每八个变成整数",arr)
+  # print("将01序列每八个变成整数",arr)
   ints_arr = unreplace_zeros(arr, avg_zeros) # 进行255替换成连续0
-  print("进行255替换成连续0",ints_arr)
+  # print("进行255替换成连续0",ints_arr)
   bits_arr = ints_to_bits(ints_arr) # 转换为二进制序列
-  print("转换为二进制序列",bits_arr)
+  # print("转换为二进制序列",bits_arr)
   bits_arr = bits_arr[0 : len(bits_arr)-add_0s] #去掉补充的0
-  print("去掉补充的0",bits_arr)
+  # print("去掉补充的0",bits_arr)
   ints_arr = de_change_bit(bits_arr)  #改变位
-  print("改变位的",ints_arr)
+  # print("改变位的",ints_arr)
   int_01_arr = bits_to_int01_arr(ints_arr)
   return int_01_arr
 

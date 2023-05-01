@@ -220,7 +220,7 @@ def DPCM(dc):
       形如[1,20,30,40] 差分编码后 变为 [1,19,10,10] 使得数字变小,二进制位数就变少了
   '''
   dpcm_arr = np.empty(dc.shape,dtype=dc.dtype)
-  print("dc--------------------",dc)
+  # print("dc--------------------",dc)
   if(len(dc) != 0):
     dpcm_arr[0] = dc[0]
   
@@ -234,7 +234,7 @@ def DPCM_decode(dpcm_arr):
     dpcm逆变换,很简单,无注释
   '''
   dc_restored = np.empty(dpcm_arr.shape,dtype=dpcm_arr.dtype)
-  print("wwwwwwwwwwwww",dpcm_arr.shape)
+  # print("wwwwwwwwwwwww",dpcm_arr.shape)
   if(dpcm_arr.shape[0] == 0):
     return dc_restored
   dc_restored[0] = dpcm_arr[0]

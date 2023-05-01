@@ -21,7 +21,7 @@ def file_bitarray_decompose(file_bitarray):
                           cnt_empty_block_cr]
   bitarr_len_lst = []
   for i in range(14):
-    print("lennnnnnnnnnnnn",int(file_bitarray[:32].to01(),2))
+    # print("lennnnnnnnnnnnn",int(file_bitarray[:32].to01(),2))
     bitarr_len_lst.append(file_bitarray[:32])
     file_bitarray = file_bitarray[32:] # 每次取走一个len值,一个len占32位
 

@@ -57,19 +57,19 @@ def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_typ
     delete_arr.append( ac_arrays.shape[0] - i)
 
   ac_ = np.delete(ac_arrays, delete_arr, axis=0)
-  print("delete_arr:",delete_arr)   #正确
-  print("dc-len:",len(dc[np.arange(dc.size - cnt_empty_block)]),"ac-len:",ac_.shape[0]) #正确
+  # print("delete_arr:",delete_arr)   #正确
+  # print("dc-len:",len(dc[np.arange(dc.size - cnt_empty_block)]),"ac-len:",ac_.shape[0]) #正确
   # print( "oooooooo",dc.shape, ac_arrays.shape)
   # print( buffer )
-  print("dc.size:",dc.size, "cnt_empty_block",cnt_empty_block)
+  # print("dc.size:",dc.size, "cnt_empty_block",cnt_empty_block)
   return  dc[np.arange(dc.size - cnt_empty_block)], \
           ac_,  \
           buffer, \
           cnt_empty_block
 
 def restore_padded_matrix_from_DC_AC(dc,ac_arrays,block_row_total, block_col_total, buffer, quant_table_type ):
-  print("dc:",dc.shape[0],"ac:",ac_arrays.shape[0])
-  print(len(buffer))
+  # print("dc:",dc.shape[0],"ac:",ac_arrays.shape[0])
+  # print(len(buffer))
   '''
     根据dc系数和ac系数还原原始8*8矩阵
   '''
