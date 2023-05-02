@@ -43,8 +43,8 @@ def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_typ
   for( block_row_index, block_col_index, block, block_index ) in block_generator(padded_matrix):
     quanted_block[block_index] = quant_block(DCT_2D(block),quant_table_type) # 量化矩阵
     tmp_array = zigzag_block_to_array(quanted_block[block_index]) # 游格编码后的数组
-    dc[block_index - cnt_empty_block] = tmp_array[0] # dc系数
-    ac_arrays[block_index - cnt_empty_block]=tmp_array[1:64] # ac系数,每一个ac系数是一个一维数组
+    dc[block_index] = tmp_array[0] # dc系数
+    ac_arrays[block_index]=tmp_array[1:64] # ac系数,每一个ac系数是一个一维数组
   
 
   for i in range(0,block_total):
