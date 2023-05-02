@@ -38,31 +38,36 @@ def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_typ
   buffer = np.empty( block_total, dtype=int )
   ac_arrays = np.empty((block_total,63),dtype=int) # ac系数, 大小为 block_total*63
   tmp_array = np.empty(64,dtype=int)
+  quanted_block = np.empty((block_total,8,8), dtype=int) # 临时存储
 
   for( block_row_index, block_col_index, block, block_index ) in block_generator(padded_matrix):
-    quanted_block = quant_block(DCT_2D(block),quant_table_type) # 量化矩阵
-    if( judge_is_empty_block(quanted_block) == True):
-      buffer[block_index] = 0
-      cnt_empty_block += 1
-      continue
-    else:
-      buffer[block_index] = 1
-      tmp_array = zigzag_block_to_array(quanted_block) # 游格编码后的数组
-      dc[block_index - cnt_empty_block] = tmp_array[0] # dc系数
-      ac_arrays[block_index - cnt_empty_block]=tmp_array[1:64] # ac系数,每一个ac系数是一个一维数组
+    quanted_block[block_index] = quant_block(DCT_2D(block),quant_table_type) # 量化矩阵
+    tmp_array = zigzag_block_to_array(quanted_block[block_index]) # 游格编码后的数组
+    dc[block_index - cnt_empty_block] = tmp_array[0] # dc系数
+    ac_arrays[block_index - cnt_empty_block]=tmp_array[1:64] # ac系数,每一个ac系数是一个一维数组
   
-  # 过滤掉零矩阵
-  delete_arr = []
-  for i in range(1,cnt_empty_block+1):
-    delete_arr.append( ac_arrays.shape[0] - i)
 
+  for i in range(0,block_total):
+    if( judge_is_empty_block(quanted_block[i]) == True):
+      buffer[i] = 0
+      cnt_empty_block += 1
+    else:
+      buffer[i] = 1
+  
+  delete_arr = []
+  for i in range(0,block_total):
+    if( buffer[i] == 0):
+      delete_arr.append(i)
+
+  
+  dc_ = np.delete(dc, delete_arr)
   ac_ = np.delete(ac_arrays, delete_arr, axis=0)
   # print("delete_arr:",delete_arr)   #正确
   # print("dc-len:",len(dc[np.arange(dc.size - cnt_empty_block)]),"ac-len:",ac_.shape[0]) #正确
   # print( "oooooooo",dc.shape, ac_arrays.shape)
   # print( buffer )
   # print("dc.size:",dc.size, "cnt_empty_block",cnt_empty_block)
-  return  dc[np.arange(dc.size - cnt_empty_block)], \
+  return  dc_, \
           ac_,  \
           buffer, \
           cnt_empty_block
