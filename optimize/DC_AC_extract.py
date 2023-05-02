@@ -10,20 +10,6 @@ def judge_is_empty_block( block ):
         return False
   return True
 
-def block_generator(padded_matrix):
-  '''
-    入参: 大矩阵
-    函数功能: 返回划分后的8*8的矩阵块
-    返回形式: [ { 矩阵块行数, 矩阵块列数, 8*8矩阵块, 矩阵块第几块 }]
-  '''
-  block = np.empty( (8,8), dtype=int) # 产生一个8*8的空矩阵
-  block_index = -1
-  for block_row_index in range( 0, padded_matrix.shape[0], 8): # 步长为8
-    for block_col_index in range( 0, padded_matrix.shape[1], 8):
-      block = padded_matrix[block_row_index:block_row_index+8, block_col_index:block_col_index+8] # 逐个获取padded_matrix的8*8分块矩阵
-      block_index += 1
-      yield (block_row_index, block_col_index, block ,block_index) # yield是干什么的？？
-
 
 def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_type):
   cnt_empty_block = 0
@@ -40,11 +26,14 @@ def dct_quant_and_extract_DC_AC_from_padded_matrix(padded_matrix,quant_table_typ
   tmp_array = np.empty(64,dtype=int)
   quanted_block = np.empty((block_total,8,8), dtype=int) # 临时存储
 
-  for( block_row_index, block_col_index, block, block_index ) in block_generator(padded_matrix):
-    quanted_block[block_index] = quant_block(DCT_2D(block),quant_table_type) # 量化矩阵
-    tmp_array = zigzag_block_to_array(quanted_block[block_index]) # 游格编码后的数组
-    dc[block_index] = tmp_array[0] # dc系数
-    ac_arrays[block_index]=tmp_array[1:64] # ac系数,每一个ac系数是一个一维数组
+  for row_index in range(0, padded_matrix.shape[0], 8):  # 步长为8
+    for col_index in range(0, padded_matrix.shape[1], 8):
+      block = padded_matrix[row_index:row_index+8, col_index:col_index+8]  # 逐个获取padded_matrix的8*8分块矩阵
+      block_index = row_index // 8 * (padded_matrix.shape[1] // 8) + col_index // 8
+      quanted_block[block_index] = quant_block(DCT_2D(block),quant_table_type) # 量化矩阵
+      tmp_array = zigzag_block_to_array(quanted_block[block_index]) # 游格编码后的数组
+      dc[block_index] = tmp_array[0] # dc系数
+      ac_arrays[block_index]=tmp_array[1:64] # ac系数,每一个ac系数是一个一维数组
   
 
   for i in range(0,block_total):
