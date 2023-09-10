@@ -18,6 +18,7 @@ def main():
   input_image_path  = args.image_to_compress
   output_image_path = args.compressed_file
   image_to_compress = Image.open(input_image_path) # 读入图片
+  image_to_compress = image_to_compress.convert('RGB')
   # image_to_compress = image_to_compress.filter(ImageFilter.GaussianBlur(radius=2)) #去噪
 
   # 1. 图片由RGB转换为YCbCr
@@ -25,7 +26,7 @@ def main():
   npmat = np.array(ycbcr, dtype=int) - 128 # 归一化处理,每一个分量的范围-128~127, npmat:width * height * 3
   
   rows,cols = npmat.shape[0],npmat.shape[1] # 像素的行数和列数
-  print(rows/2 * cols/2 / 8 /8)
+  #print(rows/2 * cols/2 / 8 /8)
 
   # 2. 色度缩减取样 subsampling(4:2:0) + padding
   '''
@@ -109,7 +110,7 @@ def main():
     cols_barr = bitarray( format(cols, '#018b')[2:] ) # 2:是因为去掉0b
     write_bitarray += rows_barr # 行数和列数
     write_bitarray += cols_barr
-    print("行数:"+ format(rows, '#018b')[2:] + "  列数:" + format(cols, '#018b')[2:])
+    #print("行数:"+ format(rows, '#018b')[2:] + "  列数:" + format(cols, '#018b')[2:])
 
     for barr in bitarray_lst:
       cur_bit_len_barr = bitarray( format(len(barr), '#034b')[2:] ) # 记住每一个item的长度
@@ -120,7 +121,7 @@ def main():
 
     write_bitarray.tofile(outFile)
 
-
+    print("encoder done")
 if __name__ == "__main__":
   main()
 

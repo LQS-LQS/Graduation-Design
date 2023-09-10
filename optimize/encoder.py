@@ -30,7 +30,8 @@ def main():
   
   rows,cols = npmat.shape[0],npmat.shape[1] # 像素的行数和列数
   # print("压缩文件的行数:",rows /2 /8,"压缩文件的列数:" ,cols /2 /8)
-
+  readDataTime = time.perf_counter()
+  print(f"encoder's readData time : {readDataTime-start_time:.4f} s")
   # 2. 色度缩减取样 subsampling(4:2:0) + padding
   '''
     这个步骤中,需要进行2*2的矩阵分块,
@@ -53,6 +54,8 @@ def main():
   Cb_padded = martix_padding(Cb) # 将矩阵补充成8的倍数
   Cr_padded = martix_padding(Cr) # 将矩阵补充成8的倍数
 
+  sumSampAndPaddingTime = time.perf_counter()
+  print(f"encoder's sumSampAndPaddingTime time : {sumSampAndPaddingTime-readDataTime:.4f} s")
   # 3. dct变换 + quant量化  + dc/ac提取
 
   # 提取dc和ac系数 y分量不需要buffer，cb和cr分量才需要有buffer，由于判断的是整个块是否为空，所以dc和ac的buffer其实是一样的
@@ -62,7 +65,8 @@ def main():
   
   # print("buffer:cb",len(buffer_cb))  #单纯的01矩阵
   # print("buffer:cr",len(buffer_cr))  #单纯的01矩阵
-  
+  quantTime = time.perf_counter()
+  print(f"encoder's quantTime time : {quantTime-sumSampAndPaddingTime:.4f} s")
   ints_buffer_cb, avg_zeros_buffer_cb, add_0s_buffer_cb, cnt_empty_block_cb = getBuffer(buffer_cb, cnt_empty_block_cb)  #得到压缩之后的数据
   ints_buffer_cr, avg_zeros_buffer_cr, add_0s_buffer_cr, cnt_empty_block_cr = getBuffer(buffer_cr, cnt_empty_block_cr)  #得到压缩之后的数据
   # dpcm + dc的熵编码
@@ -78,6 +82,10 @@ def main():
   size_bitarray_dc_cb, value_bitarray_dc_cb = encode_DC_entropy_all(dpcm_cb)
   
   size_bitarray_dc_cr, value_bitarray_dc_cr = encode_DC_entropy_all(dpcm_cr)
+
+
+  dcTime = time.perf_counter()
+  print(f"encoder's dcTime time : {dcTime-quantTime:.4f} s")
   # print("size_bitarray_dc_cb",size_bitarray_dc_cb)
   # print("value_bitarray_dc_cb",value_bitarray_dc_cb)
   # print("size_bitarray_dc_cr",size_bitarray_dc_cr)
@@ -107,7 +115,8 @@ def main():
     huffman_res_bitarray_ac_cr += huffman_tmp_bitarray_ac_cr
     value_res_bitarray_ac_cr += value_tmp_bitarray_ac_cr
 
-
+  rleTime = time.perf_counter()
+  print(f"encoder's rleTime time : {rleTime-dcTime:.4f} s")
   # 存储文件
   with open(output_image_path, 'wb') as outFile:
     bitarray_lst = [
@@ -151,7 +160,11 @@ def main():
 
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
+    print(f"encoder's wtire time : {end_time-rleTime:.4f} s")
     print(f"encoder's execution time : {elapsed_time:.4f} s")
+    print("------------------------------------------------")
+    print((quantTime-sumSampAndPaddingTime)/elapsed_time*100)
+    print("------------------------------------------------")
 if __name__ == "__main__":
   main()
 

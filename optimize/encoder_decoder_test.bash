@@ -1,12 +1,16 @@
 #!/bin/bash
 
-testImages="./testImages/t"
+testImages="./UCID_dada_set/t"
+testImages="./data_set/"
+testImages="./Images/agricultural/"
 args_encoder_list=()
 
-# 循环生成参数列表
-for i in {1..19}; do
+# 循环生成参数列表1
+for i in {1..99}; do
   image="${testImages}${i}"
-  args_encoder_list+=("${image}.jpg ${image}")
+  image="${testImages}agricultural${i}"
+  image="$(printf "%s%02d" "${testImages}agricultural" "$i")"
+  args_encoder_list+=("${image}.tif ${image}")
 done
 
 # 循环执行 encoder.py
@@ -17,8 +21,10 @@ done
 args_decoder_list=()
 
 # 循环生成参数列表
-for i in {1..19}; do
+for i in {1..99}; do
   image="${testImages}${i}"
+  image="${testImages}agricultural${i}"
+  image="$(printf "%s%02d" "${testImages}agricultural" "$i")"
   args_decoder_list+=("${image} ${image}_res.jpg")
 done
 

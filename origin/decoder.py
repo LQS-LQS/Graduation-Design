@@ -51,7 +51,7 @@ def main():
   all_block_RLE_lists_cr = All_block_huffmanResbitarray_valueBitarray_to_RLE_lists(huffman_bitarray_ac_cr, value_bitarray_ac_cr)
   #calculate y,cb,cr 8x8 block index from ogirinal rows and cols
   block_rows_y,block_cols_y = math.ceil(rows/8), math.ceil(cols/8)
-  print("lqs:",rows,cols)
+  #print("lqs:",rows,cols)
   block_rows_cb,block_cols_cb = block_rows_cr,block_cols_cr = math.ceil(rows/2/8),math.ceil(cols/2/8)
   block_total_y  = block_rows_y * block_cols_y
   block_total_cb = block_rows_cb * block_cols_cb
@@ -93,6 +93,6 @@ def main():
   image = image.convert('RGB')
   image.save(image_restored_path)
 
-
+  print("decoder done")
 if __name__ == "__main__":
   main()

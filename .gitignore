@@ -1,5 +1,7 @@
-.*/testImages
-.*/UCID1338
-.*/UCID_data_set
-.*/data_set
-.*/图片
+**/testImages
+**/Images
+**/UCID1338
+**/UCID_data_set
+**/data_set
+**/图片
+**/__pycache__

@@ -22,6 +22,7 @@ def main():
   input_image_path  = args.image_to_compress
   output_image_path = args.compressed_file
   image_to_compress = Image.open(input_image_path) # 读入图片
+  image_to_compress = image_to_compress.convert('RGB')
   # image_to_compress = image_to_compress.filter(ImageFilter.GaussianBlur(radius=2)) #去噪
 
   # 1. 图片由RGB转换为YCbCr

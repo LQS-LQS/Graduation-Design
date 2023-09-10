@@ -62,7 +62,7 @@ def get_quantization_table(type):
   if(type == 'lum'):
     return table / 5
   else:
-    return table
+    return table * 3
 
 def quant_block(block, type):
   '''

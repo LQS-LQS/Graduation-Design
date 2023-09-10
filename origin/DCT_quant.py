@@ -68,7 +68,7 @@ def get_quantization_table(type):
     # chromNumber = chromNumber + 1
     # if( chromNumber % 100 == 0):
     #   print('chrom:',chromNumber)
-    return table
+    return table * 2
 
 def quant_block(block, type):
   '''
